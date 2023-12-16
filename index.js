@@ -1,52 +1,60 @@
-let display = document.getElementById('display')
-let buttons = document.getElementsByTagName('button')
+let display = document.getElementById('display');
+let buttons = document.getElementsByTagName('button');
 
-let seconds = 0
-let minute = 0
-let hour = 0
+let seconds = 0;
+let minute = 0;
+let hour = 0;
 
-let globalId = ''
+let timerId;
 
-buttons[0].addEventListener('click', () => {
-    let timer = setInterval(() => {
-        let outputSecond = seconds > 9 ? seconds : `0` + seconds
-        let outputMinute = minute > 9 ? minute : `0${minute}`
-        let outputHour = hour > 9 ? hour : `0${hour}`
+buttons[0].addEventListener('click', startTimer);
+buttons[1].addEventListener('click', stopTimer);
+buttons[2].addEventListener('click', resetTimer);
+buttons[3].addEventListener('click', saveTimer);
 
-        seconds++
-        if(seconds === 60){
-            minute ++
-            seconds = 0
-        }
+function startTimer() {
+    if (!timerId) {
+        timerId = setInterval(updateTimer, 100);
+    }
+}
 
-        if(minute === 60){
-            hour ++
-            minute = 0
-        }
-        display.textContent = `${outputHour}:${outputMinute}:${outputSecond}`
-    }, 100)
-    globalId = timer
+function stopTimer() {
+    clearInterval(timerId);
+    timerId = undefined;
+}
 
-})
-
-buttons[1].addEventListener('click', () => {
-    clearInterval(globalId)
-})
-
-buttons[2].addEventListener('click', () => {
-    clearInterval(globalId)
-    display.textContent = `00:00:00`;
+function resetTimer() {
+    stopTimer();
+    display.textContent = '00:00:00';
     seconds = 0;
     minute = 0;
     hour = 0;
-})
+}
 
-let display2 = document.getElementById("display2");
-buttons[3].addEventListener('click', () => {
+function updateTimer() {
+    seconds++;
+    if (seconds === 60) {
+        minute++;
+        seconds = 0;
+    }
 
-    let elementDisplay = document.createElement('h1')
-    clearInterval(globalId)
-    elementDisplay.innerHTML = display.textContent
-    display2.appendChild(elementDisplay)
+    if (minute === 60) {
+        hour++;
+        minute = 0;
+    }
 
-})
+    let outputSecond = seconds > 9 ? seconds : '0' + seconds;
+    let outputMinute = minute > 9 ? minute : '0' + minute;
+    let outputHour = hour > 9 ? hour : '0' + hour;
+
+    display.textContent = `${outputHour}:${outputMinute}:${outputSecond}`;
+}
+
+function saveTimer() {
+    if (timerId) {
+        stopTimer();
+        let elementDisplay = document.createElement('h1');
+        elementDisplay.innerHTML = display.textContent;
+        document.getElementById('display2').appendChild(elementDisplay);
+    }
+}
